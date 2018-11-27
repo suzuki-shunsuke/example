@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metabase
+  namespace: metabase
+spec:
+  selector:
+    matchLabels:
+      app: metabase
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: metabase
+    spec:
+      containers:
+      - name: metabase
+        image: metabase/metabase:v0.30.3
+        env:
+        - name: MB_DB_TYPE
+          value: mysql
+        - name: MB_DB_DBNAME
+          valueFrom:
+            secretKeyRef:
+              name: metabase-db
+              key: dbname
+        - name: MB_DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: metabase-db
+              key: port
+        - name: MB_DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: metabase-db
+              key: user
+        - name: MB_DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: metabase-db
+              key: pass
+        - name: MB_DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: metabase-db
+              key: host
