@@ -1,0 +1,48 @@
+---
+version: '3.7'
+services:
+  redis:
+    image: redis:5.0.2
+  postgres:
+    image: postgres:11.1
+    environment:
+    - POSTGRES_PASSWORD=secret
+    - POSTGRES_USER=sentry
+  sentry: &sentry
+    image: sentry:9.0.0
+    environment:
+    - "SENTRY_SECRET_KEY=<secret_key>"
+    # postgres
+    - SENTRY_POSTGRES_HOST=postgres
+    - SENTRY_POSTGRES_PORT=5432
+    - SENTRY_DB_NAME=sentry
+    - SENTRY_DB_USER=sentry
+    - SENTRY_DB_PASSWORD=secret
+    # redis
+    - SENTRY_REDIS_HOST=redis
+    - SENTRY_REDIS_PORT=6379
+    # - SENTRY_REDIS_DB=
+    depends_on:
+    - postgres
+    - redis
+    ports:
+    - "127.0.0.1:8080:9000"
+  cron:
+    <<: *sentry
+    command:
+    - run
+    - cron
+    ports: []
+  worker:
+    <<: *sentry
+    command:
+    - run
+    - worker
+    ports: []
+#   migrate-postgres:
+#     <<: *sentry
+#     stdin_open: true
+#     tty: true
+#     command:
+#     - upgrade
+#     ports: []
