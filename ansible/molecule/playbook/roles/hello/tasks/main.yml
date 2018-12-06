@@ -1,0 +1,7 @@
+---
+- name: debug hello
+  debug:
+    var: hello
+- name: debug group
+  debug:
+    var: group
