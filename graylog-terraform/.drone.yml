@@ -1,0 +1,51 @@
+---
+pipeline:
+  envsubst:
+    image: suzukishunsuke/alpine-envsubst:0.1.0
+    commands:
+    - envsubst < terraform.tfvars.tpl > terraform.tfvars
+    secrets:
+    - source: terraform_token_prod
+      target: graylog_auth_name
+    when:
+      event: tag
+  plan:
+    image: &terraform_image "suzukishunsuke/terraform-graylog:0.1.2"
+    commands:
+    - terraform init
+    - terraform validate
+    - terraform fmt -check
+    - terraform plan
+    when:
+      event: tag
+      ref: refs/tags/plan/*
+  apply:
+    image: *terraform_image
+    commands:
+    - terraform init
+    - terraform validate
+    - terraform plan
+    - terraform fmt -check
+    - terraform apply -auto-approve
+    when:
+      event: tag
+      ref: refs/tags/apply/*
+  git:
+    image: plugins/git
+    commands:
+    - sh drone_pipeline_commands/git.sh
+    when:
+      event: tag
+      ref: refs/tags/apply/*
+  validate:
+    image: *terraform_image
+    environment:
+    - "TF_VAR_auth_name=dummy"
+    - "TF_VAR_auth_password=token"
+    - "TF_VAR_web_endpoint_uri=https://graylog.example.com/api"
+    commands:
+    - terraform init
+    - terraform validate
+    - terraform fmt -check
+    when:
+      event: pull_request

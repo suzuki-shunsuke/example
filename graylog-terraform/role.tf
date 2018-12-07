@@ -9,3 +9,17 @@ resource "graylog_role" "regular_employee" {
     "indexercluster:read",
   ]
 }
+
+resource "graylog_role" "terraform" {
+  name        = "terraform"
+  description = "terraform"
+
+  permissions = [
+    "dashboards:*",
+    "indexsets:*",
+    "inputs:*",
+    "roles:*",
+    "streams:*",
+    "users:*",
+  ]
+}

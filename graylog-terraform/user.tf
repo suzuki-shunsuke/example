@@ -8,3 +8,14 @@ resource "graylog_user" "mike" {
     "${module.hello.regular_employee_name}",
   ]
 }
+
+resource "graylog_user" "terraform" {
+  username  = "terraform"
+  email     = "terraform@example.com"
+  full_name = "terraform"
+
+  roles = [
+    "terraform",
+    "Reader",
+  ]
+}
