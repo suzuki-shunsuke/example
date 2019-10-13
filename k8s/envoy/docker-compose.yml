@@ -1,0 +1,14 @@
+---
+version: "3"
+services:
+  envoy:
+    image: envoyproxy/envoy:v1.11.1
+    volumes:
+    - ./base/envoy.yaml:/etc/envoy/envoy.yaml
+    entrypoint: ["tail", "-f", "/dev/null"]
+    ports:
+    - "9000:80"
+  service1:
+    image: nginx:1.17.4
+  service2:
+    image: nginx:1.17.4

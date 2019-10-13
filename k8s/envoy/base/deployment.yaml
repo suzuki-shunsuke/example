@@ -1,0 +1,84 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: envoy
+spec:
+  selector:
+    matchLabels:
+      app: envoy
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: envoy
+    spec:
+      containers:
+      - name: envoy
+        image: envoyproxy/envoy:v1.11.1
+        volumeMounts:
+        - name: envoy
+          mountPath: /etc/envoy
+      volumes:
+      - name: envoy
+        configMap:
+          name: envoy
+          items:
+          - key: envoy.yaml
+            path: envoy.yaml
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service1
+spec:
+  selector:
+    matchLabels:
+      app: service1
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: service1
+    spec:
+      containers:
+      - name: service1
+        image: nginx:1.17.4
+        volumeMounts:
+        - name: index-service1
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: index-service1
+        configMap:
+          name: index-service1
+          items:
+          - key: index-service1.html
+            path: index.html
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service2
+spec:
+  selector:
+    matchLabels:
+      app: service2
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: service2
+    spec:
+      containers:
+      - name: service2
+        image: nginx:1.17.4
+        volumeMounts:
+        - name: index-service2
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: index-service2
+        configMap:
+          name: index-service2
+          items:
+          - key: index-service2.html
+            path: index.html
