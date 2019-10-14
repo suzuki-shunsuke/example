@@ -12,3 +12,6 @@ configMapGenerator:
 - name: index-service2
   files:
   - index-service2.html
+- name: default-conf-service-3
+  files:
+  - nginx-500.conf

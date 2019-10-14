@@ -82,3 +82,31 @@ spec:
           items:
           - key: index-service2.html
             path: index.html
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service3
+spec:
+  selector:
+    matchLabels:
+      app: service3
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: service3
+    spec:
+      containers:
+      - name: service2
+        image: nginx:1.17.4
+        volumeMounts:
+        - name: default-conf
+          mountPath: /etc/nginx/conf.d
+      volumes:
+      - name: default-conf
+        configMap:
+          name: default-conf-service-3
+          items:
+          - key: nginx-500.conf
+            path: default.conf
